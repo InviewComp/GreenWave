@@ -2,7 +2,8 @@ pragma solidity >=0.4.23 <0.6.0;
 
 contract TraficLights {
     address public owner;
-    mapping(uint => uint[]) public greenWawes;
+    mapping(uint => uint[]) public greenWawesSuccesses;
+    mapping(uint => uint[]) public greenWawesFails;
     uint public greenWaweCounter;
 
     event GreenWaweAdded(uint waweId, uint lightsCount);
@@ -23,7 +24,8 @@ contract TraficLights {
       * @param lightsCount Number of lights in wawe.
       */
     function addGreenWawe(uint lightsCount) public onlyOwner {
-        greenWawes[greenWaweCounter] = new uint[](lightsCount);
+        greenWawesSuccesses[greenWaweCounter] = new uint[](lightsCount);
+        greenWawesFails[greenWaweCounter] = new uint[](lightsCount);
         emit GreenWaweAdded(greenWaweCounter, lightsCount);
         greenWaweCounter += 1;
     }
@@ -32,7 +34,8 @@ contract TraficLights {
       * @param waweId Wawe id.
       */
     function resetGreenWawe(uint waweId) public onlyOwner {
-        greenWawes[waweId] = new uint[](greenWawes[waweId].length);
+        greenWawesSuccesses[waweId] = new uint[](greenWawesSuccesses[waweId].length);
+        greenWawesFails[waweId] = new uint[](greenWawesFails[waweId].length);
         emit GreenWaweReset(greenWaweCounter);
     }
 
@@ -42,7 +45,8 @@ contract TraficLights {
       */
     function fosterLight(uint waweId, uint lightId) public onlyOwner {
         require(waweId < greenWaweCounter, "Green wawe doesn't exist");
-        greenWawes[waweId][lightId] += 1;
+        greenWawesSuccesses[waweId][lightId] += 1;
+        greenWawesFails[waweId][lightId] += 1;
         emit LightFostered(waweId, lightId);
     }
 
@@ -52,15 +56,16 @@ contract TraficLights {
       */
     function dropLight(uint waweId, uint lightId) public onlyOwner {
         require(waweId < greenWaweCounter, "Green wawe doesn't exist");
-        greenWawes[waweId][lightId] -= 1;
+        greenWawesSuccesses[waweId][lightId] -= 1;
+        greenWawesFails[waweId][lightId] -= 1;
         emit LightDroped(waweId, lightId);
     }
 
     /** @dev Get couters of lights in wawe.
       * @param waweId Wawe id.
       */
-    function getLights(uint waweId) public view returns(uint[] memory) {
-        return greenWawes[waweId];
+    function getLights(uint waweId) public view returns(uint[] memory, uint[] memory) {
+        return (greenWawesSuccesses[waweId], greenWawesFails[waweId]);
     }
 
 }
