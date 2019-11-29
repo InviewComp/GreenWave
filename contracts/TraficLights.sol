@@ -46,7 +46,6 @@ contract TraficLights {
     function fosterLight(uint waweId, uint lightId) public onlyOwner {
         require(waweId < greenWaweCounter, "Green wawe doesn't exist");
         greenWawesSuccesses[waweId][lightId] += 1;
-        greenWawesFails[waweId][lightId] += 1;
         emit LightFostered(waweId, lightId);
     }
 
@@ -56,8 +55,7 @@ contract TraficLights {
       */
     function dropLight(uint waweId, uint lightId) public onlyOwner {
         require(waweId < greenWaweCounter, "Green wawe doesn't exist");
-        greenWawesSuccesses[waweId][lightId] -= 1;
-        greenWawesFails[waweId][lightId] -= 1;
+        greenWawesSuccesses[waweId][lightId] += 1;
         emit LightDroped(waweId, lightId);
     }
 
